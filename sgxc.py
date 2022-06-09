@@ -8,7 +8,7 @@ import os
 
 def start(mobile, password):
     header = {
-        "User-Agent": "EverPhoto/2.7.0 (Android;2702;ONEPLUS A6000;28;oppo)",
+        "User-Agent": "EverPhoto/4.2.0 (Android;2702;ONEPLUS A6000;28;oppo)",
         "x-device-mac": "02:00:00:00:00:00",
         "application":"tc.everphoto",
         "authorization": "Bearer 94P6RfZFfqvVQ2hH4jULaYGI",
