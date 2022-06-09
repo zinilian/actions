@@ -1,0 +1,31 @@
+name: AutoSignIn
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  sgxc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: sign in
+        run: |
+          python ./sgxc.py
+        env:
+          SGXC_DATA: ${{ secrets.SGXC_DATA }}
+
