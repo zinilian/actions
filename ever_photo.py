@@ -34,7 +34,7 @@ class EverPhoto(object):
         if res.get("code") == 0:
             print(f"✔️ login success: {self._mobile}")
             data = res.get("data")
-            print(f"data: {data}")
+            # print(f"data: {data}")
             self._headers.update({"authorization": f"Bearer {data['token']}"})
         else:
             msg = res.get("message")
@@ -60,7 +60,7 @@ class EverPhoto(object):
                 print(f"total_reward: {data['total_reward'] / (1024 * 1024)}")
                 print(
                     f"tomorrow_reward: {data['tomorrow_reward'] / (1024 * 1024)}")
-                print(f"data: {data}")
+                # print(f"data: {data}")
             else:
                 print(f"✔️ checkin already: {self._mobile}")
         else:
