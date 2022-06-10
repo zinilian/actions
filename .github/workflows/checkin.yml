@@ -1,4 +1,4 @@
-name: AutoSignIn
+name: AutoCheckIn
 
 on:
   schedule:
@@ -18,14 +18,13 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: requirements
+      - name: install requirements
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: sign in
+      - name: checkin
         run: |
-          python ./sgxc.py
+          python ./ever_photo.py
         env:
-          SGXC_DATA: ${{ secrets.SGXC_DATA }}
-
+          EVER_PHOTO_DATA: ${{ secrets.EVER_PHOTO_DATA }}
