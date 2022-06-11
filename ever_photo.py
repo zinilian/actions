@@ -69,12 +69,6 @@ class EverPhoto(object):
                     "code": 0,
                     "msg": msg
                 }
-                # print(f"reward: {data['reward'] / (1024 * 1024)}")
-                # print(f"continuity: {data['continuity']}")
-                # print(f"total_reward: {data['total_reward'] / (1024 * 1024)}")
-                # print(
-                #     f"tomorrow_reward: {data['tomorrow_reward'] / (1024 * 1024)}")
-                # print(f"data: {data}")
             else:
                 print(f"✔️ checkin already: {self._mobile}")
                 return {
