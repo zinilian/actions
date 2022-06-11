@@ -2,12 +2,12 @@ name: AutoCheckIn
 
 on:
   schedule:
-    - cron: 0 0 * * *
+    - cron: 0 23 * * * # 7:00
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  ever_photo:
+  checkin:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +25,9 @@ jobs:
 
       - name: checkin
         run: |
-          python ./ever_photo.py
+          python ./main.py
         env:
           EVER_PHOTO_DATA: ${{ secrets.EVER_PHOTO_DATA }}
+          WX_CORP_ID: ${{ secrets.WX_CORP_ID }}
+          WX_APP_ID: ${{ secrets.WX_APP_ID }}
+          WX_APP_SECRET: ${{ secrets.WX_APP_SECRET }}

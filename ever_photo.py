@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf8 -*-
+# coding=utf-8
 # 时光相册签到
 import requests
 import hashlib
 import os
+
+TITLE = "时光相册"
 
 
 class EverPhoto(object):
@@ -18,7 +20,6 @@ class EverPhoto(object):
             "user-agent": "EverPhoto/4.5.0 (Android;2702;ONEPLUS A6000;28;oppo)",
             "application": "tc.everphoto",
         }
-        self.login()
 
     def salt(self, value):
         return hashlib.md5((self.SALT + value).encode()).hexdigest()
@@ -42,6 +43,8 @@ class EverPhoto(object):
             raise Exception(msg)
 
     def checkin(self):
+        self.login()
+
         headers = {
             "content-type": "application/json",
             "host": "openapi.everphoto.cn",
@@ -55,22 +58,63 @@ class EverPhoto(object):
             data = res.get("data")
             if data.get("checkin_result"):
                 print(f"✔️ checkin success: {self._mobile}")
-                print(f"reward: {data['reward'] / (1024 * 1024)}")
-                print(f"continuity: {data['continuity']}")
-                print(f"total_reward: {data['total_reward'] / (1024 * 1024)}")
-                print(
-                    f"tomorrow_reward: {data['tomorrow_reward'] / (1024 * 1024)}")
+                msg = {
+                    "reward": data['reward'] / (1024 * 1024),
+                    "continuity": data['continuity'],
+                    "total_reward": data['total_reward'] / (1024 * 1024),
+                    "tomorrow_reward": data['tomorrow_reward'] / (1024 * 1024),
+                }
+                print(msg)
+                return {
+                    "code": 0,
+                    "msg": msg
+                }
+                # print(f"reward: {data['reward'] / (1024 * 1024)}")
+                # print(f"continuity: {data['continuity']}")
+                # print(f"total_reward: {data['total_reward'] / (1024 * 1024)}")
+                # print(
+                #     f"tomorrow_reward: {data['tomorrow_reward'] / (1024 * 1024)}")
                 # print(f"data: {data}")
             else:
                 print(f"✔️ checkin already: {self._mobile}")
+                return {
+                    "code": 1,
+                    "msg": "已签到"
+                }
         else:
             print(f"❌ checkin error: {res.get('message')}")
+            return {
+                "code": -1,
+                "msg": res.get('message')
+            }
+
+    @staticmethod
+    def start(push):
+        form_data = os.environ['EVER_PHOTO_DATA']
+        for user_data in form_data.split(';'):
+            mobile, password = user_data.split(',')
+            try:
+                account = EverPhoto(mobile, password)
+                res = account.checkin()
+                push(TITLE, EverPhoto.getmsg(mobile, res))
+            except Exception as e:
+                push(TITLE, str(e))
+
+    @staticmethod
+    def getmsg(mobile, result):
+        code = result.get('code')
+        if code == 0:
+            msg = result['msg']
+            return f"签到成功({mobile})\n" +\
+                f"奖励空间: {msg['reward']}MB\n" +\
+                f"已连续签到: {msg['continuity']}天\n" +\
+                f"已获奖励: {msg['total_reward']}MB\n" +\
+                f"明日可领: {msg['tomorrow_reward']}MB"
+        elif code == 1:
+            return f"今日已签到({mobile})"
+        else:
+            return f"签到失败({mobile})\n" + result.get('msg')
 
 
 if __name__ == '__main__':
-    env = os.environ
-    form_data = env['EVER_PHOTO_DATA']
-    for user_data in form_data.split(';'):
-        mobile, password = user_data.split(',')
-        account = EverPhoto(mobile, password)
-        account.checkin()
+    EverPhoto.start()
