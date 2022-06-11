@@ -2,7 +2,7 @@ name: AutoCheckIn
 
 on:
   schedule:
-    - cron: 0 23 * * * # 7:00
+    - cron: 1 16 * * * # 00:01
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
