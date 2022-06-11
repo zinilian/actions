@@ -28,6 +28,7 @@ jobs:
           python ./main.py
         env:
           EVER_PHOTO_DATA: ${{ secrets.EVER_PHOTO_DATA }}
+          CLOUD189_ACCOUNTS: ${{ secrets.CLOUD189_ACCOUNTS }}
           WX_CORP_ID: ${{ secrets.WX_CORP_ID }}
           WX_APP_ID: ${{ secrets.WX_APP_ID }}
           WX_APP_SECRET: ${{ secrets.WX_APP_SECRET }}
