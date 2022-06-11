@@ -18,3 +18,4 @@ message push:
 ## ❤️ Credits
 
 - [ICE99125/everphoto_checkin](https://github.com/ICE99125/everphoto_checkin)
+- [Cluas/189checkin](https://github.com/Cluas/189checkin)
