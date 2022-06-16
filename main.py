@@ -24,7 +24,7 @@ def push_msg(msg_list):
                     url="https://github.com/ZenLian/actions/actions")
 
     msg = parse_msg(msg_list)
-    # push(msg)
+    push(msg)
     print(msg)
 
 
