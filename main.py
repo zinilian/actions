@@ -1,5 +1,6 @@
 from ever_photo import EverPhoto
 from cloud189 import Clound189
+from youdao import YouDao
 from push import WeWorkPush
 
 
@@ -31,7 +32,7 @@ def push_msg(msg_list):
 def main():
 
     msg_list = []
-    all = (EverPhoto, Clound189)
+    all = (EverPhoto, Clound189, YouDao)
     for v in all:
         try:
             msg = v.start()

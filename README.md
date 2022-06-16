@@ -8,6 +8,7 @@ account info:
 
 - `${{ secrets.EVER_PHOTO_DATA }}`: EverPhoto account info, in format `mobile1,passwd1;mobile2,passwd2`
 - `${{ secrets.CLOUD189_ACCOUNTS }}`: CLOUD189 account info, in format `mobile1,passwd1;mobile2,passwd2`
+- `${{ secrets.YOUDAO_COOKIES }}`: YouDao cookies, different accounts seperated by `\n`
 
 message push:
 
