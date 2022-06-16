@@ -28,26 +28,38 @@ class YouDao(object):
             self.REFRESH_COOKIES_URL, cookies=self._cookies)
         cookies = dict(refresh_cookies_res.cookies)
         url = "https://note.youdao.com/yws/api/daupromotion?method=sync"
-        res = requests.post(url=url, cookies=cookies)
-        if "error" not in res.text:
+        res = requests.post(url=url, cookies=cookies).json()
+        print(res)
+        if "error" not in res:
             checkin_response = requests.post(
                 url="https://note.youdao.com/yws/mapi/user?method=checkin", cookies=cookies
             )
+            print(checkin_response.json())
+            unit_space = 1048576
             for i in range(3):
                 ad_response = requests.post(
                     url="https://note.youdao.com/yws/mapi/user?method=adRandomPrompt", cookies=cookies
                 )
-                ad_space += ad_response.json().get("space", 0) // 1048576
-            if "reward" in res.text:
-                sync_space = res.json().get("rewardSpace", 0) // 1048576
-                checkin_space = checkin_response.json().get("space", 0) // 1048576
-                space = sync_space + checkin_space + ad_space
-                msg = {
+                print(ad_response.text)
+                ad_space += ad_response.json().get("space", 0) // unit_space
+            sync_space = res.get("rewardSpace", 0) // unit_space
+            checkin_space = checkin_response.json().get("space", 0) // unit_space
+            space = sync_space + checkin_space + ad_space
+            total_space = res.get('totalRewardSpace') // unit_space
+            msg = [
+                {
                     "name": "签到成功",
                     "value": f"+{space}M",
+                },
+                {
+                    "name": "已获奖励",
+                    "value": f"{total_space}M",
+                },
+                {
+                    "name": "已连续签到",
+                    "value": f"{res.get('continuousDays')}天"
                 }
-            else:
-                msg = "获取失败"
+            ]
         else:
             raise Exception(f"签到失败: {res.json().get('error')}")
         return msg
