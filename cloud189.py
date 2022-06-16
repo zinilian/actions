@@ -9,8 +9,6 @@ import time
 import requests
 import rsa
 
-TITLE = '天翼云盘'
-
 
 def _chr(a):
     return "0123456789abcdefghijklmnopqrstuvwxyz"[a]
@@ -49,6 +47,7 @@ def b64_to_hex(a):
 
 
 class Clound189(object):
+    NAME = '天翼云盘'
     LOGIN_URL = "https://cloud.189.cn/api/portal/loginUrl.action?" \
                 "redirectURL=https://cloud.189.cn/web/redirect.html?returnURL=/main.action"
     SUBMIT_LOGIN_URL = "https://open.e.189.cn/api/logbox/oauth2/loginSubmit.do"
@@ -62,11 +61,7 @@ class Clound189(object):
 
     def checkin(self):
         self.login()
-        msg = {}
-        result = {
-            'code': 0,
-            'msg': msg
-        }
+        msg = []
         rand = str(round(time.time() * 1000))
         headers = {
             "User-Agent": "Mozilla/5.0 (Linux; Android 5.1.1; SM-G930K Build/NRD90M; wv)"
@@ -80,14 +75,14 @@ class Clound189(object):
         }
         response = self._client.get(self.SIGN_URL % rand, headers=headers)
         net_disk_bonus = response.json()["netdiskBonus"]
-        if response.json()["isSign"] == "false":
-            result['code'] = 0
-            print("签到成功")
+        if response.json()["isSign"] is False:
+            msg.append("签到成功")
         else:
-            result['code'] = 1
-            print("今日已签到")
-        msg['checkin'] = f"签到获得{net_disk_bonus}M空间"
-        print(msg['checkin'])
+            msg.append("今日已签到")
+        msg.append({
+            "name": "签到奖励",
+            "value": f"{net_disk_bonus}MB"
+        })
 
         # 抽奖
         headers = {
@@ -102,18 +97,22 @@ class Clound189(object):
         }
         url1 = "https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN&activityId=ACT_SIGNIN"
         url2 = "https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN_PHOTOS&activityId=ACT_SIGNIN"
-        msg['prize_name'] = []
         for i, url in enumerate((url1, url2)):
             response = self._client.get(url, headers=headers)
             if "errorCode" in response.text:
                 errcode = response.json().get('errorCode')
-                print(f"没有抽奖机会: {errcode}")
+                msg.append({
+                    "name": "抽奖失败",
+                    "value": errcode,
+                })
             else:
                 prize_name = (response.json() or {}).get("prizeName")
-                message = f"抽奖获得{prize_name}"
-                msg['prize_name'].append(message)
-                print(message)
-        return result
+                msg.append({
+                    "name": "抽奖获得",
+                    "value": prize_name,
+                })
+        print(msg)
+        return msg
 
     @staticmethod
     def rsa_encode(rsa_key, string):
@@ -156,33 +155,16 @@ class Clound189(object):
         self._client.get(redirect_url)
 
     @staticmethod
-    def start(push=None):
+    def start():
+        msg = []
         data = os.environ['CLOUD189_ACCOUNTS']
         for user_data in data.split(';'):
             username, password = user_data.split(',')
-            try:
-                account = Clound189(username, password)
-                res = account.checkin()
-                push and push(TITLE, Clound189.getmsg(username, res))
-            except Exception as e:
-                push and push(TITLE, str(e))
-
-    @staticmethod
-    def getmsg(username, result):
-        code = result.get('code')
-        msg = result['msg']
-        if code >= 0:
-            if code == 0:
-                ret = "签到成功"
-            elif code == 1:
-                ret = "今日已签到"
-            ret += f"({username})\n{msg['checkin']}"
-            for prize_name in msg['prize_name']:
-                ret += f"\n{prize_name}"
-        else:
-            # 签到失败
-            ret = "签到失败"
-        return ret
+            msg.append(f"---账号: {username}---")
+            account = Clound189(username, password)
+            res = account.checkin()
+            msg.append(res)
+        return msg
 
 
 if __name__ == "__main__":

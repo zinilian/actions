@@ -5,10 +5,9 @@ import requests
 import hashlib
 import os
 
-TITLE = "时光相册"
-
 
 class EverPhoto(object):
+    NAME = "时光相册"
     LOGIN_URL = "https://web.everphoto.cn/api/auth"
     CHECKIN_URL = "https://openapi.everphoto.cn/sf/3/v4/PostCheckIn"
     SALT = "tc.everphoto."
@@ -25,12 +24,11 @@ class EverPhoto(object):
         return hashlib.md5((self.SALT + value).encode()).hexdigest()
 
     def login(self):
-        form = {
+        data = {
             "mobile": f"+86{self._mobile}",
             "password": self.salt(self._password),
         }
-        # form = f"mobile={self._mobile}&password={self._password}"
-        res = requests.post(self.LOGIN_URL, data=form,
+        res = requests.post(self.LOGIN_URL, data=data,
                             headers=self._headers).json()
         if res.get("code") == 0:
             print(f"✔️ login success: {self._mobile}")
@@ -53,61 +51,49 @@ class EverPhoto(object):
 
         headers.update(self._headers)
 
+        msg = []
         res = requests.post(self.CHECKIN_URL, headers=headers).json()
         if res.get("code") == 0:
             data = res.get("data")
             if data.get("checkin_result"):
                 print(f"✔️ checkin success: {self._mobile}")
-                msg = {
-                    "reward": data['reward'] / (1024 * 1024),
-                    "continuity": data['continuity'],
-                    "total_reward": data['total_reward'] / (1024 * 1024),
-                    "tomorrow_reward": data['tomorrow_reward'] / (1024 * 1024),
-                }
+                msg.append("签到成功")
+                msg.append({
+                    "name": "奖励空间",
+                    "value": f"{data['reward'] / (1024 * 1024)}MB",
+                })
+                msg.append({
+                    "name": "已连续签到",
+                    "value": f"{data['continuity']}天",
+                })
+                msg.append({
+                    "name": "已获奖励",
+                    "value": f"{data['total_reward'] / (1024 * 1024)}MB",
+                })
+                msg.append({
+                    "name": "明日可领",
+                    "value": f"{data['tomorrow_reward'] / (1024 * 1024)}MB",
+                })
                 print(msg)
-                return {
-                    "code": 0,
-                    "msg": msg
-                }
             else:
                 print(f"✔️ checkin already: {self._mobile}")
-                return {
-                    "code": 1,
-                    "msg": "已签到"
-                }
+                msg.append("今日已签到")
         else:
             print(f"❌ checkin error: {res.get('message')}")
-            return {
-                "code": -1,
-                "msg": res.get('message')
-            }
+            raise Exception(f"签到失败: {res.get('message')}")
+        return msg
 
     @staticmethod
-    def start(push):
-        form_data = os.environ['EVER_PHOTO_DATA']
-        for user_data in form_data.split(';'):
+    def start():
+        msg = []
+        data = os.environ['EVER_PHOTO_DATA']
+        for user_data in data.split(';'):
             mobile, password = user_data.split(',')
-            try:
-                account = EverPhoto(mobile, password)
-                res = account.checkin()
-                push(TITLE, EverPhoto.getmsg(mobile, res))
-            except Exception as e:
-                push(TITLE, str(e))
-
-    @staticmethod
-    def getmsg(mobile, result):
-        code = result.get('code')
-        if code == 0:
-            msg = result['msg']
-            return f"签到成功({mobile})\n" +\
-                f"奖励空间: {msg['reward']}MB\n" +\
-                f"已连续签到: {msg['continuity']}天\n" +\
-                f"已获奖励: {msg['total_reward']}MB\n" +\
-                f"明日可领: {msg['tomorrow_reward']}MB"
-        elif code == 1:
-            return f"今日已签到({mobile})"
-        else:
-            return f"签到失败({mobile})\n" + result.get('msg')
+            msg.append(f"---账号: {mobile}---")
+            account = EverPhoto(mobile, password)
+            res = account.checkin()
+            msg.append(res)
+        return msg
 
 
 if __name__ == '__main__':
