@@ -6,17 +6,18 @@ Take use of github actions to *薅羊毛*.
 
 account info:
 
-- `${{ secrets.EVER_PHOTO_DATA }}`: EverPhoto account info, in format `mobile1,passwd1;mobile2,passwd2`
-- `${{ secrets.CLOUD189_ACCOUNTS }}`: CLOUD189 account info, in format `mobile1,passwd1;mobile2,passwd2`
-- `${{ secrets.YOUDAO_COOKIES }}`: YouDao cookies, different accounts seperated by `\n`
+- `EVER_PHOTO_DATA`: EverPhoto account info, in format `mobile1,passwd1;mobile2,passwd2`
+- `CLOUD189_ACCOUNTS`: CLOUD189 account info, in format `mobile1,passwd1;mobile2,passwd2`
+- `YOUDAO_COOKIES`: YouDao cookies, different accounts seperated by `\n`
 
 message push:
 
-- `${{ secrets.WX_CORP_ID }}`
-- `${{ secrets.WX_APP_ID }}`
-- `${{ secrets.WX_APP_SECRET }}`
+- `WX_CORP_ID`
+- `WX_APP_ID`
+- `WX_APP_SECRET`
 
 ## ❤️ Credits
 
 - [ICE99125/everphoto_checkin](https://github.com/ICE99125/everphoto_checkin)
 - [Cluas/189checkin](https://github.com/Cluas/189checkin)
+- [Sitoi/dailycheckin](https://github.com/Sitoi/dailycheckin)
