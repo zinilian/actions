@@ -27,7 +27,7 @@ jobs:
         run: |
           python ./main.py
         env:
-          EVER_PHOTO_DATA: ${{ secrets.EVER_PHOTO_DATA }}
+          EVER_PHOTO_ACCOUNTS: ${{ secrets.EVER_PHOTO_ACCOUNTS }}
           CLOUD189_ACCOUNTS: ${{ secrets.CLOUD189_ACCOUNTS }}
           WX_CORP_ID: ${{ secrets.WX_CORP_ID }}
           WX_APP_ID: ${{ secrets.WX_APP_ID }}

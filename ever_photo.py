@@ -86,7 +86,7 @@ class EverPhoto(object):
     @staticmethod
     def start():
         msg = []
-        data = os.environ['EVER_PHOTO_DATA']
+        data = os.environ['EVER_PHOTO_ACCOUNTS']
         for user_data in data.split(';'):
             mobile, password = user_data.split(',')
             msg.append(f"---账号: {mobile}---")
