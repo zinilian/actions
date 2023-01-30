@@ -1,15 +1,17 @@
-name: AutoCheckIn
+name: MSE5-AutoApi
 
 on:
   schedule:
-    - cron: 0 8 * * * # 16:00
-  # Allows you to run this workflow manually from the Actions tab
+    - cron: 12 */6 * * 1-5 # 每周1-5每6小时执行一次
+  # 手动执行
   workflow_dispatch:
+  watch:
+    types: [started]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    if: github.event.repository.owner.id == github.event.sender.id # self started
     steps:
       - uses: actions/checkout@v3
 
@@ -23,12 +25,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: checkin
+      - name: run api
         run: |
-          python ./main.py
+          python microsoft_e5.py
         env:
-          EVER_PHOTO_ACCOUNTS: ${{ secrets.EVER_PHOTO_ACCOUNTS }}
-          CLOUD189_ACCOUNTS: ${{ secrets.CLOUD189_ACCOUNTS }}
+          MS_TOKEN: ${{ secrets.MS_TOKEN }}
+          MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+          MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
           # wechat app id
           WX_CORP_ID: ${{ secrets.WX_CORP_ID }}
           WX_APP_ID: ${{ secrets.WX_APP_ID }}

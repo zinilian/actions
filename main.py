@@ -26,11 +26,10 @@ def push_msg(msg_list):
 
     msg = parse_msg(msg_list)
     push(msg)
-    print(msg)
+    print(f'[DEBUG] push message:\n{msg}')
 
 
 def main():
-
     msg_list = []
     all = (EverPhoto, Clound189, YouDao)
     for v in all:
