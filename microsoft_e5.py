@@ -95,8 +95,8 @@ class MSE5(object):
         if 'refresh_token' not in res:
             print(r'[ERROR] mse5: get token failed')
             return
-        refresh_token = res['refresh_token']
-        print('refresh_token: ' + refresh_token)
+        # refresh_token = res['refresh_token']
+        # print('refresh_token: ' + refresh_token)
         access_token = res['access_token']
         return access_token
 
