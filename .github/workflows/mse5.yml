@@ -5,13 +5,13 @@ on:
     - cron: 12 */6 * * 1-5 # 每周1-5每6小时执行一次
   # 手动执行
   workflow_dispatch:
-  watch:
-    types: [started]
+  # watch:
+  #   types: [started]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id # self started
+    # if: github.event.repository.owner.id == github.event.sender.id # self started
     steps:
       - uses: actions/checkout@v3
 
